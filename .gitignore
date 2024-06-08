@@ -32,3 +32,4 @@
 *.app
 /GameProgrammingPatterns/x64
 /x64
+/.idea
