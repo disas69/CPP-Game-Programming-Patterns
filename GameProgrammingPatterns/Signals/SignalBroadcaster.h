@@ -4,32 +4,30 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "Signal.h"
 
-template <typename ReturnType, typename DataType>
+template <typename T, typename DataType>
 class SignalBroadcaster
 {
-    typedef std::function<ReturnType(DataType)> GenericFunc;
+    typedef std::function<void(DataType)> Func;
     
 public:
-    void AddListener(std::shared_ptr<Signal<DataType>> Signal, GenericFunc Listener)
+    void AddListener(std::shared_ptr<T> Signal, Func Listener)
     {
         const size_t HashCode = typeid(Signal).hash_code();
         if (Signals.find(HashCode) == Signals.end())
         {
-            Signals[HashCode] = std::vector<GenericFunc>();
+            Signals[HashCode] = std::vector<Func>();
         }
         
         Signals[HashCode].push_back(Listener);
     }
 
-    void RemoveListener(std::shared_ptr<Signal<DataType>> Signal, GenericFunc Listener)
+    void RemoveListener(std::shared_ptr<T> Signal, Func Listener)
     {
         const size_t HashCode = typeid(Signal).hash_code();
 
-        auto First = Signals[HashCode].begin();
-        const auto It = std::remove(First, Signals[HashCode].end(), Listener);
-        Signals[HashCode].erase(It, Signals[HashCode].end());
+        auto& Listeners = Signals[HashCode];
+        Listeners.erase(std::remove(Listeners.begin(), Listeners.end(), Listener), Listeners.end());
 
         if (Signals[HashCode].empty())
         {
@@ -37,13 +35,13 @@ public:
         }
     }
 
-    void RemoveListeners(std::shared_ptr<Signal<DataType>> Signal)
+    void RemoveListeners(std::shared_ptr<T> Signal)
     {
         const size_t HashCode = typeid(Signal).hash_code();
         Signals.erase(HashCode);
     }
 
-    void Broadcast(std::shared_ptr<Signal<DataType>> Signal)
+    void Broadcast(std::shared_ptr<T> Signal)
     {
         const size_t HashCode = typeid(Signal).hash_code();
 
@@ -54,32 +52,46 @@ public:
     }
 
 private:
-    std::map<size_t, std::vector<GenericFunc>> Signals;
+    std::map<size_t, std::vector<Func>> Signals;
 };
 
-template <>
-class SignalBroadcaster<void, void>
+template <typename T>
+class SignalBroadcaster<T, void>
 {
-    typedef std::function<void()> VoidFunc;
+    typedef std::function<void()> Func;
+
 public:
-    void AddListener(std::shared_ptr<Signal<void>> Signal, VoidFunc Listener)
+    void AddListener(std::shared_ptr<T> Signal, Func Listener)
     {
         const size_t HashCode = typeid(Signal).hash_code();
         if (Signals.find(HashCode) == Signals.end())
         {
-            Signals[HashCode] = std::vector<VoidFunc>();
+            Signals[HashCode] = std::vector<Func>();
         }
-        
+
         Signals[HashCode].push_back(Listener);
     }
 
-    void RemoveListeners(std::shared_ptr<Signal<void>> Signal)
+    void RemoveListener(std::shared_ptr<T> Signal, Func Listener)
+    {
+        const size_t HashCode = typeid(Signal).hash_code();
+
+        auto& Listeners = Signals[HashCode];
+        Listeners.erase(std::remove(Listeners.begin(), Listeners.end(), Listener), Listeners.end());
+
+        if (Listeners.empty())
+        {
+            Signals.erase(HashCode);
+        }
+    }
+
+    void RemoveListeners(std::shared_ptr<T> Signal)
     {
         const size_t HashCode = typeid(Signal).hash_code();
         Signals.erase(HashCode);
     }
 
-    void Broadcast(std::shared_ptr<Signal<void>> Signal)
+    void Broadcast(std::shared_ptr<T> Signal)
     {
         const size_t HashCode = typeid(Signal).hash_code();
 
@@ -90,5 +102,5 @@ public:
     }
 
 private:
-    std::map<size_t, std::vector<VoidFunc>> Signals;
+    std::map<size_t, std::vector<Func>> Signals;
 };

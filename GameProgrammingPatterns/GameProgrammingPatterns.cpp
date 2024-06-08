@@ -140,20 +140,20 @@ void ServiceLocatorTest()
 void SignalsTest()
 {
     // Create a trigger signal broadcaster
-    SignalBroadcaster<void, void> TriggerSignalBroadcaster;
-
+    SignalBroadcaster<TriggerSignal, void> TriggerSignalBroadcaster;
+    
     // Create a signal and add a listener
     const std::shared_ptr<TriggerSignal> Trigger = std::make_shared<TriggerSignal>();
     TriggerSignalBroadcaster.AddListener(Trigger, []() { std::cout << "Trigger Received" << std::endl; });
-
+    
     // Broadcast the signal
     TriggerSignalBroadcaster.Broadcast(Trigger);
-
+    
     // Remove all listeners
     TriggerSignalBroadcaster.RemoveListeners(Trigger);
 
     // Create a collision signal broadcaster
-    SignalBroadcaster<void, bool> CollisionSignalBroadcaster;
+    SignalBroadcaster<CollisionSignal, bool> CollisionSignalBroadcaster;
 
     // Create a signal and add a listener
     const std::shared_ptr<CollisionSignal> Collision = std::make_shared<CollisionSignal>(true);
