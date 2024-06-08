@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "Command/ActionCommand.h"
 #include "Command/CommandQueue.h"
 #include "Command/CommandStack.h"
 #include "ObjectPool/ObjectPool.h"
 #include "ObjectPool/PooledEntity.h"
+#include "ServiceLocator/AudioService.h"
+#include "ServiceLocator/ServiceLocator.h"
 #include "Singleton/GameManager.h"
 #include "StateMachine/StateMachine.h"
 
@@ -87,6 +90,31 @@ void CommandTest()
     }
 }
 
+void ServiceLocatorTest()
+{
+    std::shared_ptr<AudioService> Audio = ServiceLocator::GetInstance().ResolveService<AudioService>();
+    if (Audio != nullptr)
+    {
+        Audio->PlaySound("Sound.wav");
+    }
+    
+    ServiceLocator::GetInstance().RegisterService<AudioService>(new AudioService());
+
+    std::shared_ptr<AudioService> Audio1 = ServiceLocator::GetInstance().ResolveService<AudioService>();
+    if (Audio1 != nullptr)
+    {
+        Audio1->PlaySound("Sound.wav");
+    }
+
+    std::shared_ptr<AudioService> Audio2 = ServiceLocator::GetInstance().ResolveService<AudioService>();
+    if (Audio2 != nullptr)
+    {
+        Audio2->StopSound("Sound.wav");
+    }
+
+    ServiceLocator::GetInstance().UnregisterService<AudioService>();
+}
+
 int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
@@ -95,7 +123,9 @@ int main(int argc, char* argv[])
 
     // SingletonTest();
 
-    CommandTest();
+    // CommandTest();
+
+    ServiceLocatorTest();
     
     return 0;
 }

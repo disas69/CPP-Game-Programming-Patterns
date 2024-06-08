@@ -9,6 +9,7 @@ class StateMachine
     static_assert(std::is_enum<T>::value, "T must be an enum");
 public:
     StateMachine(T InitialState) : CurrentState(InitialState) {}
+    ~StateMachine() { TransitionsMap.clear(); }
 
     void AddTransition(T From, T To, std::function<void()> Transition)
     {
