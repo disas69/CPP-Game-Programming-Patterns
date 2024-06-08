@@ -9,6 +9,9 @@
 #include "ObjectPool/PooledEntity.h"
 #include "ServiceLocator/AudioService.h"
 #include "ServiceLocator/ServiceLocator.h"
+#include "Signals/CollisionSignal.h"
+#include "Signals/SignalBroadcaster.h"
+#include "Signals/TriggerSignal.h"
 #include "Singleton/GameManager.h"
 #include "StateMachine/StateMachine.h"
 
@@ -134,6 +137,35 @@ void ServiceLocatorTest()
     ServiceLocator::GetInstance().UnregisterService<AudioService>();
 }
 
+void SignalsTest()
+{
+    // Create a trigger signal broadcaster
+    SignalBroadcaster<void, void> TriggerSignalBroadcaster;
+
+    // Create a signal and add a listener
+    const std::shared_ptr<TriggerSignal> Trigger = std::make_shared<TriggerSignal>();
+    TriggerSignalBroadcaster.AddListener(Trigger, []() { std::cout << "Trigger Received" << std::endl; });
+
+    // Broadcast the signal
+    TriggerSignalBroadcaster.Broadcast(Trigger);
+
+    // Remove all listeners
+    TriggerSignalBroadcaster.RemoveListeners(Trigger);
+
+    // Create a collision signal broadcaster
+    SignalBroadcaster<void, bool> CollisionSignalBroadcaster;
+
+    // Create a signal and add a listener
+    const std::shared_ptr<CollisionSignal> Collision = std::make_shared<CollisionSignal>(true);
+    CollisionSignalBroadcaster.AddListener(Collision, [](bool IsColliding) { std::cout << "Collision Received: " << IsColliding << std::endl; });
+
+    // Broadcast the signal
+    CollisionSignalBroadcaster.Broadcast(Collision);
+
+    // Remove all listeners
+    CollisionSignalBroadcaster.RemoveListeners(Collision);
+}
+
 int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
@@ -144,7 +176,9 @@ int main(int argc, char* argv[])
 
     // CommandTest();
 
-    ServiceLocatorTest();
+    // ServiceLocatorTest();
+
+    SignalsTest();
     
     return 0;
 }
