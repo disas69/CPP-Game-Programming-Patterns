@@ -37,7 +37,7 @@ void ObjectPoolTest()
     {
         Pool.ReturnObject(Entity);
     }
-    
+
     Entities.clear();
 }
 
@@ -73,14 +73,14 @@ void SingletonTest()
 void CommandTest()
 {
     // Create 3 action commands with execute and undo functions
-    ActionCommand MoveCommand([]() { std::cout << "Move" << std::endl; }, []() { std::cout << "Undo Move" << std::endl; });
-    ActionCommand JumpCommand([]() { std::cout << "Jump" << std::endl; }, []() { std::cout << "Undo Jump" << std::endl; });
-    ActionCommand AttackCommand([]() { std::cout << "Attack" << std::endl; }, []() { std::cout << "Undo Attack" << std::endl; });
+    auto MoveCommand = std::make_shared<ActionCommand>([]() { std::cout << "Move" << std::endl; }, []() { std::cout << "Undo Move" << std::endl; });
+    auto JumpCommand = std::make_shared<ActionCommand>([]() { std::cout << "Jump" << std::endl; }, []() { std::cout << "Undo Jump" << std::endl; });
+    auto AttackCommand = std::make_shared<ActionCommand>([]() { std::cout << "Attack" << std::endl; }, []() { std::cout << "Undo Attack" << std::endl; });
 
     // Create a command queue and add 2 commands
     CommandQueue CommandQueue;
-    CommandQueue.AddCommand(std::make_shared<ActionCommand>(MoveCommand));
-    CommandQueue.AddCommand(std::make_shared<ActionCommand>(JumpCommand));
+    CommandQueue.AddCommand(MoveCommand);
+    CommandQueue.AddCommand(JumpCommand);
 
     // Process all commands in the queue
     std::cout << "Pending command count: " << CommandQueue.GetCommandCount() << std::endl;
@@ -88,10 +88,10 @@ void CommandTest()
 
     // Create a command stack and add 4 commands
     CommandStack CommandStack;
-    CommandStack.AddCommand(std::make_shared<ActionCommand>(AttackCommand));
-    CommandStack.AddCommand(std::make_shared<ActionCommand>(AttackCommand));
-    CommandStack.AddCommand(std::make_shared<ActionCommand>(JumpCommand));
-    CommandStack.AddCommand(std::make_shared<ActionCommand>(MoveCommand));
+    CommandStack.AddCommand(AttackCommand);
+    CommandStack.AddCommand(AttackCommand);
+    CommandStack.AddCommand(JumpCommand);
+    CommandStack.AddCommand(MoveCommand);
 
     // Process all commands in the stack
     std::cout << "Pending command count: " << CommandStack.GetPendingCommandCount() << std::endl;
@@ -141,14 +141,14 @@ void SignalsTest()
 {
     // Create a trigger signal broadcaster
     SignalBroadcaster<TriggerSignal, void> TriggerSignalBroadcaster;
-    
+
     // Create a signal and add a listener
     const std::shared_ptr<TriggerSignal> Trigger = std::make_shared<TriggerSignal>();
     TriggerSignalBroadcaster.AddListener(Trigger, []() { std::cout << "Trigger Received" << std::endl; });
-    
+
     // Broadcast the signal
     TriggerSignalBroadcaster.Broadcast(Trigger);
-    
+
     // Remove all listeners
     TriggerSignalBroadcaster.RemoveListeners(Trigger);
 
@@ -174,11 +174,11 @@ int main(int argc, char* argv[])
 
     // SingletonTest();
 
-    // CommandTest();
+    CommandTest();
 
     // ServiceLocatorTest();
 
-    SignalsTest();
-    
+    // SignalsTest();
+
     return 0;
 }
