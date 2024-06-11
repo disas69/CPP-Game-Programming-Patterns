@@ -18,7 +18,7 @@
 void ObjectPoolTest()
 {
     // Create a pool of 3 objects
-    ObjectPool<PooledEntity> Pool(3);
+    ObjectPool<PooledEntity> Pool(3, true);
 
     std::vector<std::shared_ptr<PooledEntity>> Entities;
 
