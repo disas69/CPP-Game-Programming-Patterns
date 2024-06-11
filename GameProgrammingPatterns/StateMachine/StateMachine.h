@@ -1,41 +1,37 @@
 ﻿#pragma once
 
 #include <functional>
-#include <map>
+#include <unordered_map>
 
 template <typename T>
 class StateMachine
 {
     static_assert(std::is_enum<T>::value, "T must be an enum");
+
 public:
     StateMachine(T InitialState) : CurrentState(InitialState) {}
-    ~StateMachine() { TransitionsMap.clear(); }
+    ~StateMachine() = default;
 
     void AddTransition(T From, T To, std::function<void()> Transition)
     {
-        for (const auto& TransitionPair : TransitionsMap)
-        {
-            if (TransitionPair.first.first == From && TransitionPair.first.second == To)
-            {
-                return;
-            }
-        }
-
-        TransitionsMap[std::make_pair(From, To)] = Transition;
+        TransitionsMap[From][To] = Transition;
     }
 
-    void SetState(T NewState)
+    bool SetState(T NewState)
     {
-        for (const auto& TransitionPair : TransitionsMap)
+        auto ItFrom = TransitionsMap.find(CurrentState);
+        if (ItFrom != TransitionsMap.end())
         {
-            if (TransitionPair.first.first == CurrentState && TransitionPair.first.second == NewState)
+            auto ItTo = ItFrom->second.find(NewState);
+            if (ItTo != ItFrom->second.end())
             {
-                TransitionPair.second();
-                break;
+                ItTo->second();
+                CurrentState = NewState;
+                return true;
             }
         }
 
-        CurrentState = NewState;
+        return false;
     }
 
     T GetCurrentState() const { return CurrentState; }
@@ -43,5 +39,5 @@ public:
 
 private:
     T CurrentState;
-    std::map<std::pair<T, T>, std::function<void()>> TransitionsMap;
+    std::unordered_map<T, std::unordered_map<T, std::function<void()>>> TransitionsMap;
 };

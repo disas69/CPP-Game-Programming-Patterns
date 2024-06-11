@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <iostream>
 #include "../Singleton/Singleton.h"
@@ -12,7 +12,7 @@ public:
     {
         ClearServices();
     }
-    
+
     template <typename T>
     void RegisterService(T* Service)
     {
@@ -54,7 +54,7 @@ public:
     }
 
 private:
-    std::map<size_t, std::shared_ptr<void>> Services;
+    std::unordered_map<size_t, std::shared_ptr<void>> Services;
 
     void ClearServices()
     {

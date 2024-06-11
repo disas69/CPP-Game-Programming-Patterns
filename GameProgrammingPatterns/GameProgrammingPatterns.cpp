@@ -52,6 +52,7 @@ void StateMachineTest()
 
     // Create a state machine with 3 states and add transitions between them
     StateMachine<State> StateMachine(State::Idle);
+    
     StateMachine.AddTransition(State::Idle, State::Walking, []() { std::cout << "Start Walking" << std::endl; });
     StateMachine.AddTransition(State::Walking, State::Running, []() { std::cout << "Start Running" << std::endl; });
     StateMachine.AddTransition(State::Running, State::Idle, []() { std::cout << "Start Idle" << std::endl; });
@@ -170,11 +171,11 @@ int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
 
-    // StateMachineTest();
+    StateMachineTest();
 
     // SingletonTest();
 
-    CommandTest();
+    // CommandTest();
 
     // ServiceLocatorTest();
 
