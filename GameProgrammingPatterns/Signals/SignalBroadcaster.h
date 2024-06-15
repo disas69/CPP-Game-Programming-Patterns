@@ -1,106 +1,118 @@
 ﻿#pragma once
 
-#include <map>
 #include <vector>
 #include <memory>
 #include <functional>
+#include <unordered_map>
 
-template <typename T, typename DataType>
-class SignalBroadcaster
+template <typename Return, typename Arg>
+class SignalBroadcaster : public Singleton<SignalBroadcaster<Return, Arg>>
 {
-    typedef std::function<void(DataType)> Func;
-    
+    using SignalType = Signal<Arg>;
+    using Func = std::function<Return(Arg)>;
+    friend Singleton<SignalBroadcaster<Return, Arg>>;
+
+    SignalBroadcaster() = default;
+
 public:
-    void AddListener(std::shared_ptr<T> Signal, Func Listener)
+    SignalBroadcaster(const SignalBroadcaster&) = delete;
+    SignalBroadcaster& operator=(const SignalBroadcaster&) = delete;
+
+    template <typename SignalType>
+    static void AddListener(Func Callback)
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-        if (Signals.find(HashCode) == Signals.end())
+        const size_t HashCode = typeid(SignalType).hash_code();
+        auto& Instance = SignalBroadcaster<Return, Arg>::GetInstance();
+        if (Instance.Signals.find(HashCode) == Instance.Signals.end())
         {
-            Signals[HashCode] = std::vector<Func>();
+            Instance.Signals[HashCode] = std::vector<Func>();
         }
-        
-        Signals[HashCode].push_back(Listener);
+
+        Instance.Signals[HashCode].push_back(Callback);
     }
 
-    void RemoveListener(std::shared_ptr<T> Signal, Func Listener)
+    template <typename SignalType>
+    static void Broadcast(const Signal<Arg>& Signal)
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-
-        auto& Listeners = Signals[HashCode];
-        Listeners.erase(std::remove(Listeners.begin(), Listeners.end(), Listener), Listeners.end());
-
-        if (Signals[HashCode].empty())
+        const size_t HashCode = typeid(SignalType).hash_code();
+        auto& Instance = SignalBroadcaster<Return, Arg>::GetInstance();
+        for (const auto& Callback : Instance.Signals[HashCode])
         {
-            Signals.erase(HashCode);
+            if (Callback != nullptr)
+            {
+                Callback(Signal.GetData());
+            }
         }
     }
 
-    void RemoveListeners(std::shared_ptr<T> Signal)
+    template <typename SignalType>
+    static void RemoveListeners()
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-        Signals.erase(HashCode);
+        const size_t HashCode = typeid(SignalType).hash_code();
+        SignalBroadcaster<Return, Arg>::GetInstance().Signals.erase(HashCode);
     }
 
-    void Broadcast(std::shared_ptr<T> Signal)
+    static void Clear()
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-
-        for (const auto& Listener : Signals[HashCode])
-        {
-            Listener(Signal->GetData());
-        }
+        SignalBroadcaster<Return, Arg>::GetInstance().Signals.clear();
     }
 
 private:
-    std::map<size_t, std::vector<Func>> Signals;
+    std::unordered_map<size_t, std::vector<Func>> Signals;
 };
 
-template <typename T>
-class SignalBroadcaster<T, void>
+template <typename Return>
+class SignalBroadcaster<Return, void> : public Singleton<SignalBroadcaster<Return, void>>
 {
-    typedef std::function<void()> Func;
+    using SignalType = Signal<void>;
+    using Func = std::function<Return()>;
+    friend Singleton<SignalBroadcaster<Return, void>>;
+
+    SignalBroadcaster() = default;
 
 public:
-    void AddListener(std::shared_ptr<T> Signal, Func Listener)
+    SignalBroadcaster(const SignalBroadcaster&) = delete;
+    SignalBroadcaster& operator=(const SignalBroadcaster&) = delete;
+
+    template <typename SignalType>
+    static void AddListener(Func Callback)
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-        if (Signals.find(HashCode) == Signals.end())
+        const size_t HashCode = typeid(SignalType).hash_code();
+        auto& Instance = SignalBroadcaster<Return, void>::GetInstance();
+        if (Instance.Signals.find(HashCode) == Instance.Signals.end())
         {
-            Signals[HashCode] = std::vector<Func>();
+            Instance.Signals[HashCode] = std::vector<Func>();
         }
 
-        Signals[HashCode].push_back(Listener);
+        Instance.Signals[HashCode].push_back(Callback);
     }
 
-    void RemoveListener(std::shared_ptr<T> Signal, Func Listener)
+    template <typename SignalType>
+    static void Broadcast()
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-
-        auto& Listeners = Signals[HashCode];
-        Listeners.erase(std::remove(Listeners.begin(), Listeners.end(), Listener), Listeners.end());
-
-        if (Listeners.empty())
+        const size_t HashCode = typeid(SignalType).hash_code();
+        auto& Instance = SignalBroadcaster<Return, void>::GetInstance();
+        for (const auto& Callback : Instance.Signals[HashCode])
         {
-            Signals.erase(HashCode);
+            if (Callback != nullptr)
+            {
+                Callback();
+            }
         }
     }
 
-    void RemoveListeners(std::shared_ptr<T> Signal)
+    template <typename SignalType>
+    static void RemoveListeners()
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-        Signals.erase(HashCode);
+        const size_t HashCode = typeid(SignalType).hash_code();
+        SignalBroadcaster<Return, void>::GetInstance().Signals.erase(HashCode);
     }
 
-    void Broadcast(std::shared_ptr<T> Signal)
+    static void Clear()
     {
-        const size_t HashCode = typeid(Signal).hash_code();
-
-        for (const auto& Listener : Signals[HashCode])
-        {
-            Listener();
-        }
+        SignalBroadcaster<Return, void>::GetInstance().Signals.clear();
     }
 
 private:
-    std::map<size_t, std::vector<Func>> Signals;
+    std::unordered_map<size_t, std::vector<Func>> Signals;
 };

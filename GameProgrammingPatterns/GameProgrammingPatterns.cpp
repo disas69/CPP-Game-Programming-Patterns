@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "Command/ActionCommand.h"
 #include "Command/CommandQueue.h"
@@ -138,40 +139,37 @@ void ServiceLocatorTest()
     ServiceLocator::GetInstance().UnregisterService<AudioService>();
 }
 
+// Define the static Signals member if SignalBroadcaster is not a singleton
+// std::unordered_map<size_t, std::vector<SignalBroadcaster::Func>> SignalBroadcaster::Signals;
+
 void SignalsTest()
 {
-    // Create a trigger signal broadcaster
-    SignalBroadcaster<TriggerSignal, void> TriggerSignalBroadcaster;
+    // Add a listener to the trigger signal
+    SignalBroadcaster<void, void>::AddListener<TriggerSignal>([]()
+    {
+        std::cout << "Trigger Received" << std::endl;
+    });
 
-    // Create a signal and add a listener
-    const std::shared_ptr<TriggerSignal> Trigger = std::make_shared<TriggerSignal>();
-    TriggerSignalBroadcaster.AddListener(Trigger, []() { std::cout << "Trigger Received" << std::endl; });
+    // Broadcast the trigger signal and remove all listeners
+    SignalBroadcaster<void, void>::Broadcast<TriggerSignal>();
+    SignalBroadcaster<void, void>::RemoveListeners<TriggerSignal>();
 
-    // Broadcast the signal
-    TriggerSignalBroadcaster.Broadcast(Trigger);
+    // Add a listener to the collision signal
+    SignalBroadcaster<void, bool>::AddListener<CollisionSignal>([](bool Value)
+    {
+        std::cout << "Collision Received: " << Value << std::endl;
+    });
 
-    // Remove all listeners
-    TriggerSignalBroadcaster.RemoveListeners(Trigger);
-
-    // Create a collision signal broadcaster
-    SignalBroadcaster<CollisionSignal, bool> CollisionSignalBroadcaster;
-
-    // Create a signal and add a listener
-    const std::shared_ptr<CollisionSignal> Collision = std::make_shared<CollisionSignal>(true);
-    CollisionSignalBroadcaster.AddListener(Collision, [](bool IsColliding) { std::cout << "Collision Received: " << IsColliding << std::endl; });
-
-    // Broadcast the signal
-    CollisionSignalBroadcaster.Broadcast(Collision);
-
-    // Remove all listeners
-    CollisionSignalBroadcaster.RemoveListeners(Collision);
+    // Broadcast the collision signal and remove all listeners
+    SignalBroadcaster<void, bool>::Broadcast<CollisionSignal>(true);
+    SignalBroadcaster<void, bool>::RemoveListeners<CollisionSignal>();
 }
 
 int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
 
-    StateMachineTest();
+    // StateMachineTest();
 
     // SingletonTest();
 
@@ -179,7 +177,7 @@ int main(int argc, char* argv[])
 
     // ServiceLocatorTest();
 
-    // SignalsTest();
+    SignalsTest();
 
     return 0;
 }
