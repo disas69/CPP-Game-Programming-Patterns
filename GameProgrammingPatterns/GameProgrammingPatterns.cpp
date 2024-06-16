@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <unordered_map>
 
 #include "Command/ActionCommand.h"
 #include "Command/CommandQueue.h"
 #include "Command/CommandStack.h"
+#include "EventQueue/AudioEvent.h"
+#include "EventQueue/EventQueue.h"
 #include "ObjectPool/ObjectPool.h"
 #include "ObjectPool/PooledEntity.h"
 #include "ServiceLocator/AudioService.h"
@@ -165,6 +166,20 @@ void SignalsTest()
     SignalBroadcaster<void, bool>::RemoveListeners<CollisionSignal>();
 }
 
+int AudioEvent::LastProcessedSoundId = -1;
+
+void EventQueueTest()
+{
+    // Create an event queue and add 3 audio events
+    EventQueue EventQueue;
+    EventQueue.AddEvent(std::make_unique<AudioEvent>(1));
+    EventQueue.AddEvent(std::make_unique<AudioEvent>(1));
+    EventQueue.AddEvent(std::make_unique<AudioEvent>(2));
+
+    // Process all events in the queue
+    EventQueue.ProcessEvents();
+}
+
 int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
@@ -177,7 +192,9 @@ int main(int argc, char* argv[])
 
     // ServiceLocatorTest();
 
-    SignalsTest();
+    // SignalsTest();
 
+    EventQueueTest();
+    
     return 0;
 }

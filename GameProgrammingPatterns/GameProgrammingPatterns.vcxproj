@@ -154,6 +154,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EventQueue\AudioEvent.cpp" />
+    <ClCompile Include="EventQueue\EventQueue.cpp" />
     <ClCompile Include="GameProgrammingPatterns.cpp" />
     <ClCompile Include="ObjectPool\PooledEntity.cpp" />
     <ClCompile Include="ServiceLocator\AudioService.cpp" />
@@ -165,6 +167,9 @@
     <ClInclude Include="Command\Command.h" />
     <ClInclude Include="Command\CommandQueue.h" />
     <ClInclude Include="Command\CommandStack.h" />
+    <ClInclude Include="EventQueue\AudioEvent.h" />
+    <ClInclude Include="EventQueue\Event.h" />
+    <ClInclude Include="EventQueue\EventQueue.h" />
     <ClInclude Include="ObjectPool\ObjectPool.h" />
     <ClInclude Include="ObjectPool\PooledObject.h" />
     <ClInclude Include="ServiceLocator\AudioService.h" />
