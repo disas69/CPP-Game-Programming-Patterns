@@ -166,8 +166,6 @@ void SignalsTest()
     SignalBroadcaster<void, bool>::RemoveListeners<CollisionSignal>();
 }
 
-int AudioEvent::LastProcessedSoundId = -1;
-
 void EventQueueTest()
 {
     // Create an event queue and add 3 audio events

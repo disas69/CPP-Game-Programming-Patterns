@@ -1,6 +1,8 @@
 #include <iostream>
 #include "AudioEvent.h"
 
+int AudioEvent::LastProcessedSoundId = -1;
+
 AudioEvent::AudioEvent(int SoundId)
 {
     this->SoundId = SoundId;
