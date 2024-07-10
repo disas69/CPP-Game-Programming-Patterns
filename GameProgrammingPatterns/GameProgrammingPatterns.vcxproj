@@ -161,6 +161,13 @@
     <ClCompile Include="ServiceLocator\AudioService.cpp" />
     <ClCompile Include="Signals\CollisionSignal.cpp" />
     <ClCompile Include="Singleton\GameManager.cpp" />
+    <ClCompile Include="State\Character.cpp" />
+    <ClCompile Include="State\CharacterStates\CharacterStateBase.cpp" />
+    <ClCompile Include="State\CharacterStates\IdleState.cpp" />
+    <ClCompile Include="State\CharacterStates\JumpState.cpp" />
+    <ClCompile Include="State\CharacterStates\RunState.cpp" />
+    <ClCompile Include="State\CharacterStates\WalkState.cpp" />
+    <ClCompile Include="State\InputType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Command\ActionCommand.h" />
@@ -181,6 +188,15 @@
     <ClInclude Include="Singleton\GameManager.h" />
     <ClInclude Include="Singleton\Singleton.h" />
     <ClInclude Include="StateMachine\StateMachine.h" />
+    <ClInclude Include="State\Character.h" />
+    <ClInclude Include="State\CharacterState.h" />
+    <ClInclude Include="State\CharacterStates\CharacterStateBase.h" />
+    <ClInclude Include="State\CharacterStates\IdleState.h" />
+    <ClInclude Include="State\CharacterStates\JumpState.h" />
+    <ClInclude Include="State\CharacterStates\RunState.h" />
+    <ClInclude Include="State\CharacterStates\WalkState.h" />
+    <ClInclude Include="State\State.h" />
+    <ClInclude Include="State\StateController.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ObjectPool\PooledEntity.h" />

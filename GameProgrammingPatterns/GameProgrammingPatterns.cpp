@@ -15,6 +15,7 @@
 #include "Signals/SignalBroadcaster.h"
 #include "Signals/TriggerSignal.h"
 #include "Singleton/GameManager.h"
+#include "State/Character.h"
 #include "StateMachine/StateMachine.h"
 
 void ObjectPoolTest()
@@ -178,6 +179,29 @@ void EventQueueTest()
     EventQueue.ProcessEvents();
 }
 
+void StateTest()
+{
+    // Create Character with states
+    Character* TestCharacter = new Character();
+
+    // Simulate 5 frames of input
+    for (size_t i = 0; i < 5; ++i)
+    {
+        int Input;
+        
+        std::cout << "Enter input: ";
+        std::cin >> Input;
+
+        // Handle input
+        TestCharacter->HandleInput(static_cast<InputType>(Input));
+
+        // Update character state
+        TestCharacter->Update(1.0f);
+    }
+
+    delete TestCharacter;
+}
+
 int main(int argc, char* argv[])
 {
     // ObjectPoolTest();
@@ -192,7 +216,9 @@ int main(int argc, char* argv[])
 
     // SignalsTest();
 
-    EventQueueTest();
+    // EventQueueTest();
+
+    StateTest();
     
     return 0;
 }
