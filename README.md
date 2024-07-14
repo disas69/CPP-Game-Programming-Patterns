@@ -13,6 +13,23 @@ A collection of the most common game programming patterns written in C++.
   // Return the object to the pool
   Pool.ReturnObject(Entity);
 ```
+- State
+```
+  // Create a new state controller and add all the states
+  StateController Controller = StateController<CharacterState>();
+  Controller.AddState(CharacterState::Idle, new IdleState(this));
+  Controller.AddState(CharacterState::Walking, new WalkState(this));
+  Controller.AddState(CharacterState::Jumping, new JumpState(this));
+
+  // Set the initial state
+  Controller.SetState(CharacterState::Idle);
+
+  // Handle the input by the current state
+  Controller.HandleInput(Input);
+
+  // Update the current state
+  Controller.Update(DeltaTime);
+```
 - State Machine
 ```
   // Create a state machine
