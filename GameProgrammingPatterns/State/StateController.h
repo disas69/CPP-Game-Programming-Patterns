@@ -22,6 +22,11 @@ public:
     
     void SetState(T NewType)
     {
+        if (CurrentType == NewType)
+        {
+            return;
+        }
+        
         State* CurrentState = GetState(CurrentType);
         if (CurrentState != nullptr)
         {
